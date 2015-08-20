@@ -34,6 +34,8 @@ if(Meteor.isServer){
 
         return app.collections.Comments.find(selector, {
           limit: limit,
+          // Using sort here is necessary to continue to use the Oplog Observe Driver!
+          // https://github.com/meteor/meteor/wiki/Oplog-Observe-Driver
           sort: {
             created: 1
           }
@@ -63,8 +65,6 @@ Template.comments.helpers({
       return;
     }
     return app.collections.Comments.find({ post: 71 },  {
-        // Using sort here is necessary to continue to use the Oplog Observe Driver!
-        // https://github.com/meteor/meteor/wiki/Oplog-Observe-Driver
         sort: {
             created: 1
         }
