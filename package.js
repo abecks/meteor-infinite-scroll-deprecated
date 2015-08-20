@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'infinite-scroll',
+  name: 'abecks:infinite-scroll',
   version: '0.1.0',
   // Brief, one-line summary of the package.
   summary: 'Template level infinite scrolling.',
