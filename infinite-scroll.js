@@ -18,6 +18,7 @@ Meteor.startup(function() {
   $(window).on('resize scroll', _.throttle(triggerLoadMore, 500));
 });
 
+
 /**
  * Attempt to trigger infinite loading when the route changes.
  */
@@ -47,16 +48,18 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
  * Enable infinite scrolling on a template.
  */
 Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(options) {
-  var tpl = this;
+  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber, firstReady, loadMore;
 
   /*
    * Create options from defaults
    */
-  var _defaults = {
+  _defaults = {
     // How many results to fetch per "page"
     perPage: 10,
     // The query to use when fetching our collection
     query: {},
+    // The subscription manager to use (optional)
+    subManager: null,
     // Collection to use for counting the amount of results
     collection: null,
     // Publication to subscribe to, if null will use {collection}Infinite
@@ -78,24 +81,52 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   if(!options.publication){
     options.publication = options.collection + 'Infinite';
   }
-  var collection = app.collections[options.collection];
+  collection = app.collections[options.collection];
+
+  // If we are using a subscription manager, cache the limit variable with the subscription
+  if(options.subManager){
+    // Create the cache object if it doesn't exist
+    if(!options.subManager._infinite){
+      options.subManager._infinite = {};
+      options.subManager._infinite[options.publication] = {};
+    }
+    subManagerCache = options.subManager._infinite[options.publication];
+  }
 
   // We use 'limit' so that Meteor can continue to use the OpLogObserve driver
   // See: https://github.com/meteor/meteor/wiki/Oplog-Observe-Driver
   // (There are a few types of queries that still use PollingObserveDriver)
-  var limit = new ReactiveVar();
+  limit = new ReactiveVar();
 
   // Retrieve the initial page size
-  limit.set(options.perPage);
+  if(subManagerCache && subManagerCache.limit){
+    limit.set(subManagerCache.limit);
+  }else{
+    limit.set(options.perPage);
+  }
 
   // Create subscription to the collection
   tpl.autorun(function() {
-    tpl.infiniteSub = tpl.subscribe(options.publication, limit.get(), options.query);
+    // Rerun when the limit changes
+    var lmt = limit.get();
+
+    // If a Subscription Manager has been supplied, use that instead to create
+    // the subscription. This is useful if you want to keep the subscription
+    // loaded for multiple templates.
+    if(options.subManager){
+      subscriber = options.subManager;
+      // Save the limit in the subscription manager so we can look it up later
+      subManagerCache.limit = lmt;
+    }else{
+      subscriber = tpl;
+    }
+
+    tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, options.query);
   });
 
   // Create infiniteReady reactive var that we can use to track
   // whether or not the first result set has been received.
-  var firstReady = new ReactiveVar(false);
+  firstReady = new ReactiveVar(false);
   tpl.infiniteReady = function(){
     return firstReady.get() === true;
   };
@@ -111,7 +142,7 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   /**
    * Load more results for this collection.
    */
-  var loadMore = function() {
+  loadMore = function() {
     var count = collection.find(options.query, {
       reactive: false
     }).count();

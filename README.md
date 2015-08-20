@@ -13,6 +13,9 @@ Template.comments.created = function() {
     query: {                            // The query to use as the selector in our collection.find() query
         post: 71
     },
+    subManager: new SubsManager(),      // (optional) A meteorhacks:subs-manager to set the subscription on
+                                        // Useful when you want the data to persist after this template 
+                                        // is destroyed.
     collection: 'Comments',             // The name of the collection to use for counting results
     publication: 'CommentsInfinite'     // (optional) The name of the publication to subscribe.
                                         // Defaults to {collection}Infinite
