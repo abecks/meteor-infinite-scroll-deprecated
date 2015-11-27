@@ -1,0 +1,10 @@
+.loadingInfinite.loading {
+    position: relative;
+    height: 100px;
+    width: 100%;
+    display: block;
+}
+
+.loadingInfinite {
+    display: none;
+}

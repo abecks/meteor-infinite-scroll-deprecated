@@ -5,7 +5,7 @@
  * to the trigger point.
  */
 function triggerLoadMore() {
-  if ($('.infinite-load-more').isAlmostVisible()) {
+  if ($('.loadingInfinite').isAlmostVisible()) {
     $(document).trigger('triggerInfiniteLoad');
   }
 }
@@ -48,7 +48,7 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
  * Enable infinite scrolling on a template.
  */
 Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(options) {
-  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber, firstReady, loadMore;
+  var tpl = this, _defaults, collection, countName, subManagerCache, limit, subscriber, firstReady, loadMore;
 
   /*
    * Create options from defaults
@@ -62,8 +62,11 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     subManager: null,
     // Collection to use for counting the amount of results
     collection: null,
-    // Publication to subscribe to, if null will use {collection}Infinite
-    publication: null
+    // Publication to subscribe to
+    publication: null,
+    // (optional) Count name, if null will use <publication>Count as default
+    countName: null
+
   };
   options = _.extend({}, _defaults, options);
 
@@ -73,15 +76,20 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   check(options.publication, String);
 
   // Collection exists?
-  if (!app.collections[options.collection]) {
+  if (!Collections[options.collection]) {
     throw new Error('Collection does not exist: ', options.collection);
   }
 
-  // Generate the publication name if one hasn't been provided
-  if(!options.publication){
-    options.publication = options.collection + 'Infinite';
+  collection = Collections[options.collection];
+
+  // Generate Default name if null is given
+
+  if (typeof options.countName !== "undefined" && options.countName !== null) {
+    countName = options.countName;
+  }else{
+    // Generate default Count name
+    countName = options.publication + "Count";
   }
-  collection = app.collections[options.collection];
 
   // If we are using a subscription manager, cache the limit variable with the subscription
   if(options.subManager){
@@ -96,19 +104,20 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   // We use 'limit' so that Meteor can continue to use the OpLogObserve driver
   // See: https://github.com/meteor/meteor/wiki/Oplog-Observe-Driver
   // (There are a few types of queries that still use PollingObserveDriver)
-  limit = new ReactiveVar();
+  tpl.limit = new ReactiveVar(options.perPage);
+  tpl.loaded = new ReactiveVar(0);
 
   // Retrieve the initial page size
   if(subManagerCache && subManagerCache.limit){
-    limit.set(subManagerCache.limit);
+    tpl.limit.set(subManagerCache.limit);
   }else{
-    limit.set(options.perPage);
+    tpl.limit.set(options.perPage);
   }
 
   // Create subscription to the collection
   tpl.autorun(function() {
     // Rerun when the limit changes
-    var lmt = limit.get();
+    var lmt = tpl.limit.get();
 
     // If a Subscription Manager has been supplied, use that instead to create
     // the subscription. This is useful if you want to keep the subscription
@@ -128,14 +137,16 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   // whether or not the first result set has been received.
   firstReady = new ReactiveVar(false);
   tpl.infiniteReady = function(){
-    return firstReady.get() === true;
+    return firstReady.get();
   };
 
-  // Set infiniteReady to true when our subscription is ready
+  //Todo: does this work with ground:db bug?
+  // Set infiniteReady to true when our subscriptions are ready
   tpl.autorun(function(){
-    var ready = tpl.infiniteSub.ready();
-    if(firstReady.get() !== true){
-      firstReady.set(ready);
+    if(tpl.infiniteSub.ready()) {
+      firstReady.set(true);
+      tpl.loaded.set(tpl.limit.get());
+      tpl.$('.loadingInfinite').removeClass('loading');
     }
   });
 
@@ -143,20 +154,23 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
    * Load more results for this collection.
    */
   loadMore = function() {
-    var count = collection.find(options.query, {
-      reactive: false
-    }).count();
+    // Get the count of the publication
+    if(!Counts.has(countName)) {
+      throw new Error("Counts does not exist for publication: ", countName)
+    }
+    var count = Counts.get(countName);
 
     // Increase the limit if it looks like there are more records
-    if (count >= limit.get()) {
-      tpl.$('.infinite-load-more').addClass('loading');
-      limit.set(limit.get() + options.perPage);
+    if (count >= tpl.limit.get()) {
+      tpl.$('.loadingInfinite').addClass('loading');
+      tpl.limit.set(tpl.loaded.get() + options.perPage);
     }else{
-      tpl.$('.infinite-load-more').removeClass('loading');
+      //Max results, no need for loader anymore
+      tpl.$('.loadingInfinite').removeClass('loading');
     }
   };
 
-  // Trigger loadMore when we've scrolled/resized close to revealing .load-more
+  // Trigger loadMore when we've scrolled/resized close to revealing .loadingInfinite
   $(document).off('triggerInfiniteLoad');
   $(document).on('triggerInfiniteLoad', loadMore);
 };
