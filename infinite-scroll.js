@@ -22,8 +22,8 @@ Meteor.startup(function() {
 /**
  * Attempt to trigger infinite loading when the route changes.
  */
-Router.onAfterAction(function() {
-  triggerLoadMore();
+Template.infiniteScroll.onRendered(function(){
+  //triggerLoadMore();
 });
 
 /**
@@ -121,7 +121,7 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
       subscriber = tpl;
     }
 
-    tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, options.query);
+    tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, options.query, null);
   });
 
   // Create infiniteReady reactive var that we can use to track
