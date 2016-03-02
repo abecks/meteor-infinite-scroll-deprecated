@@ -1,6 +1,6 @@
 Package.describe({
   name: 'staringatlights:infinite-scroll',
-  version: '0.4.0',
+  version: '0.5.0',
   // Brief, one-line summary of the package.
   summary: 'Template level infinite scrolling.',
   // URL to the Git repository containing the source code for this package.

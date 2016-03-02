@@ -20,13 +20,6 @@ Meteor.startup(function() {
 
 
 /**
- * Attempt to trigger infinite loading when the route changes.
- */
-Template.infiniteScroll.onRendered(function(){
-  //triggerLoadMore();
-});
-
-/**
  * jQuery plugin to determine whether an element is "almost visible".
  * @return {Boolean}
  */
@@ -136,8 +129,10 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     var ready = tpl.infiniteSub.ready();
     if(firstReady.get() !== true){
       firstReady.set(ready);
+      triggerLoadMore();
     }
   });
+
 
   /**
    * Load more results for this collection.

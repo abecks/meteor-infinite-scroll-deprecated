@@ -1,3 +1,6 @@
+# 0.5.0
+- Fixed an issue with tall window heights
+
 # 0.4.0
 - Requires Meteor 1.2 or greater
 - Fixed a bug where the loader would not show on the initial subscription load
