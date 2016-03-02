@@ -12,7 +12,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.2');
-  api.use(['jquery', 'less', 'reactive-var', 'templating', 'tmeasday:publish-counts'], 'client');
+  api.use(['jquery', 'less', 'reactive-var', 'templating', 'tmeasday:publish-counts@0.7.3'], 'client');
   api.addFiles('infiniteScroll.html', 'client');
   api.addFiles('infinite-scroll.js', 'client');
   api.addFiles('infinite-scroll.less', 'client');
