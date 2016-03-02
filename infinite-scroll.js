@@ -51,6 +51,8 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     perPage: 10,
     // The query to use when fetching our collection
     query: {},
+    // The sorting instructions for MongoDB
+    sort: {},
     // The subscription manager to use (optional)
     subManager: null,
     // Collection to use for counting the amount of results
@@ -133,7 +135,14 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
       query = options.query;
     }
 
-    tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, query, null);
+    var sort;
+    if(options.sort instanceof ReactiveVar){
+      sort = options.sort.get();
+    }else{
+      sort = options.sort;
+    }
+
+    tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, query, sort, null);
   });
 
   // Check to see if we need to load more

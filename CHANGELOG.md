@@ -1,3 +1,6 @@
+## 0.7.0
+- Add sort functionality
+
 ## 0.6.1
 - Added Tracker.afterFlush when checking to load more data
 
