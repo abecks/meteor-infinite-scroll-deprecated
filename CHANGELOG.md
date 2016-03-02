@@ -1,3 +1,8 @@
+## 0.6.0
+- Overhauled reliability of the loader template and triggers
+- Removed `Template.instance().infiniteReady()` in favor of `Template.instance().infiniteSub.ready()`
+- New dependency on `tmeasday:publish-counts` for more reliable loading
+
 # 0.5.0
 - Fixed an issue with tall window heights
 

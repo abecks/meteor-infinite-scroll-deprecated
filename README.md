@@ -13,7 +13,7 @@ Template.comments.created = function() {
     query: {                            // The query to use as the selector in our collection.find() query
         post: 71
     },
-    subManager: new SubsManager(),      // (optional) A meteorhacks:subs-manager to set the subscription on
+    subManager: new SubsManager(),      // (optional, experimental) A meteorhacks:subs-manager to set the subscription on
                                         // Useful when you want the data to persist after this template 
                                         // is destroyed.
     collection: 'Comments',             // The name of the collection to use for counting results
@@ -34,8 +34,11 @@ if(Meteor.isServer){
         check(query.name, String);
         // Assign safe values to a new object after they have been validated
         selector.name = query.name;
+                
+        // This is required so we know the total amount of documents for the given query
+        Counts.publish(this, 'CommentsInfiniteCount', app.collections.Comments.find(selector));
 
-        return app.collections.Comments.find(selector, {
+      	return app.collections.Comments.find(selector, {
           limit: limit,
           // Using sort here is necessary to continue to use the Oplog Observe Driver!
           // https://github.com/meteor/meteor/wiki/Oplog-Observe-Driver
@@ -63,10 +66,6 @@ Provide data to the template as you usually would. Use `infiniteReady()` like yo
 ```js
 Template.comments.helpers({
   comments: function() {
-    // Don't show anything until the first result set has been received
-    if(!Template.instance().infiniteReady()){
-      return;
-    }
     return app.collections.Comments.find({ post: 71 },  {
         sort: {
             created: 1

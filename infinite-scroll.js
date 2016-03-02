@@ -32,7 +32,7 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
   return (
     rect.top >= 0 &&
     rect.left >= 0 &&
-    rect.bottom <= (jQuery(window).height() * 2) &&
+    rect.bottom <= (jQuery(window).height() * 1.5) &&
     rect.right <= jQuery(window).width()
   );
 };
@@ -41,7 +41,7 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
  * Enable infinite scrolling on a template.
  */
 Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(options) {
-  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber, firstReady, loadMore;
+  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber, loadMore;
 
   /*
    * Create options from defaults
@@ -56,7 +56,9 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     // Collection to use for counting the amount of results
     collection: null,
     // Publication to subscribe to, if null will use {collection}Infinite
-    publication: null
+    publication: null,
+    // Name of the count
+    countsName: null
   };
   options = _.extend({}, _defaults, options);
 
@@ -98,6 +100,15 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     limit.set(options.perPage);
   }
 
+  // If the query changes, the limit must reset
+  if(options.query instanceof ReactiveVar){
+    tpl.autorun(function(){
+      options.query.get();
+      limit.set(options.perPage);
+    });
+  }
+
+
   // Create subscription to the collection
   tpl.autorun(function() {
     // Rerun when the limit changes
@@ -114,21 +125,19 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
       subscriber = tpl;
     }
 
-    tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, options.query, null);
+    var query;
+    if(options.query instanceof ReactiveVar){
+      query = options.query.get();
+    }else{
+      query = options.query;
+    }
+
+    tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, query, null);
   });
 
-  // Create infiniteReady reactive var that we can use to track
-  // whether or not the first result set has been received.
-  firstReady = new ReactiveVar(false);
-  tpl.infiniteReady = function(){
-    return firstReady.get() === true;
-  };
-
-  // Set infiniteReady to true when our subscription is ready
+  // Check to see if we need to load more
   tpl.autorun(function(){
-    var ready = tpl.infiniteSub.ready();
-    if(firstReady.get() !== true){
-      firstReady.set(ready);
+    if(tpl.infiniteSub.ready()){
       triggerLoadMore();
     }
   });
@@ -138,16 +147,9 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
    * Load more results for this collection.
    */
   loadMore = function() {
-    var count = collection.find(options.query, {
-      reactive: false
-    }).count();
-
-    // Increase the limit if it looks like there are more records
-    if (count >= limit.get()) {
-      tpl.$('.infinite-load-more').addClass('loading');
-      limit.set(limit.get() + options.perPage);
-    }else{
-      tpl.$('.infinite-load-more').removeClass('loading');
+    var lmt = limit.get(), total = Counts.get(options.publication + 'Count');
+    if(lmt < total){
+      limit.set(lmt + options.perPage);
     }
   };
 
@@ -155,3 +157,23 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   $(document).off('triggerInfiniteLoad');
   $(document).on('triggerInfiniteLoad', loadMore);
 };
+
+
+Template.infiniteScroll.helpers({
+
+  loading: function(){
+
+    // Loop through parent templates until we find infiniteSub
+    var tpl = Template.instance();
+    while(!tpl.infiniteSub){
+      var parent = tpl.parents();
+      if(!parent){
+        break;
+      }
+      tpl = parent;
+    }
+
+    return !tpl.infiniteSub.ready();
+  }
+
+});
