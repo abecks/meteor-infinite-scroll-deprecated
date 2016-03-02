@@ -41,7 +41,7 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
  * Enable infinite scrolling on a template.
  */
 Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(options) {
-  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber, loadMore;
+  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber, loadMore, countsName;
 
   /*
    * Create options from defaults
@@ -56,9 +56,7 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     // Collection to use for counting the amount of results
     collection: null,
     // Publication to subscribe to, if null will use {collection}Infinite
-    publication: null,
-    // Name of the count
-    countsName: null
+    publication: null
   };
   options = _.extend({}, _defaults, options);
 
@@ -87,6 +85,9 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     }
     subManagerCache = options.subManager._infinite[options.publication];
   }
+
+  // CountsName lets us keep track of the total amount of documents for the given query
+  countsName = options.publication + 'Count';
 
   // We use 'limit' so that Meteor can continue to use the OpLogObserve driver
   // See: https://github.com/meteor/meteor/wiki/Oplog-Observe-Driver
@@ -138,16 +139,16 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   // Check to see if we need to load more
   tpl.autorun(function(){
     if(tpl.infiniteSub.ready()){
-      triggerLoadMore();
+      Tracker.afterFlush(triggerLoadMore);
     }
   });
 
 
   /**
-   * Load more results for this collection.
+   * Load more results if our limit is below the total
    */
   loadMore = function() {
-    var lmt = limit.get(), total = Counts.get(options.publication + 'Count');
+    var lmt = limit.get(), total = Counts.get(countsName);
     if(lmt < total){
       limit.set(lmt + options.perPage);
     }

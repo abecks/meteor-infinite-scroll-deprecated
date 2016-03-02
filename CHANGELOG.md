@@ -1,3 +1,6 @@
+## 0.6.1
+- Added Tracker.afterFlush when checking to load more data
+
 ## 0.6.0
 - Overhauled reliability of the loader template and triggers
 - Removed `Template.instance().infiniteReady()` in favor of `Template.instance().infiniteSub.ready()`
