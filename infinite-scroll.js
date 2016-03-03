@@ -96,13 +96,6 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   // (There are a few types of queries that still use PollingObserveDriver)
   limit = new ReactiveVar();
 
-  // Retrieve the initial page size
-  if(subManagerCache && subManagerCache.limit){
-    limit.set(subManagerCache.limit);
-  }else{
-    limit.set(options.perPage);
-  }
-
   // If the query changes, the limit must reset
   if(options.query instanceof ReactiveVar){
     tpl.autorun(function(){
@@ -111,6 +104,12 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     });
   }
 
+  // Retrieve the initial page size
+  if(subManagerCache && subManagerCache.limit){
+    limit.set(subManagerCache.limit);
+  }else{
+    limit.set(options.perPage);
+  }
 
   // Create subscription to the collection
   tpl.autorun(function() {
