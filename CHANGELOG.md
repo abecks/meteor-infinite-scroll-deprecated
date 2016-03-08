@@ -1,3 +1,6 @@
+## 0.7.2
+- Added check package to dependencies
+
 ## 0.7.0
 - Add sort functionality
 
