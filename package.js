@@ -12,7 +12,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.2');
-  api.use(['jquery', 'less', 'reactive-var', 'templating', 'check', 'jwo1f:parent-template'], 'client');
+  api.use(['jquery', 'less', 'reactive-var', 'templating', 'check', 'jwo1f:parent-template@0.0.3'], 'client');
   api.export('InfiniteScroll');
   api.addFiles('infiniteScroll.html', 'client');
   api.addFiles('infinite-scroll.js', 'client');
