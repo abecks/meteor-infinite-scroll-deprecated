@@ -1,3 +1,8 @@
+## 0.8.0
+- Remove dependency on Counts, didn't work out so well
+- Customizable class on the loader template
+- Exposes `InfiniteScroll.triggerLoadMore` so you can use custom scroll regions (eg. `this.$('.results-list').on('resize scroll', _.throttle(InfiniteScroll.triggerLoadMore, 300));`)
+
 ## 0.7.2
 - Added check package to dependencies
 

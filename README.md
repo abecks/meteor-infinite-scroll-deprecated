@@ -35,9 +35,6 @@ if(Meteor.isServer){
         // Assign safe values to a new object after they have been validated
         selector.name = query.name;
                 
-        // This is required so we know the total amount of documents for the given query
-        Counts.publish(this, 'CommentsInfiniteCount', app.collections.Comments.find(selector));
-
       	return app.collections.Comments.find(selector, {
           limit: limit,
           // Using sort here is necessary to continue to use the Oplog Observe Driver!

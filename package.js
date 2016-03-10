@@ -1,6 +1,6 @@
 Package.describe({
   name: 'staringatlights:infinite-scroll',
-  version: '0.7.2',
+  version: '0.8.0',
   // Brief, one-line summary of the package.
   summary: 'Template level infinite scrolling.',
   // URL to the Git repository containing the source code for this package.
@@ -12,7 +12,8 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.2');
-  api.use(['jquery', 'less', 'reactive-var', 'templating', 'tmeasday:publish-counts@0.7.3', 'check'], 'client');
+  api.use(['jquery', 'less', 'reactive-var', 'templating', 'check', 'jwo1f:parent-template'], 'client');
+  api.export('InfiniteScroll');
   api.addFiles('infiniteScroll.html', 'client');
   api.addFiles('infinite-scroll.js', 'client');
   api.addFiles('infinite-scroll.less', 'client');
