@@ -14,7 +14,7 @@ Template.comments.created = function() {
         post: 71
     },
     subManager: new SubsManager(),      // (optional, experimental) A meteorhacks:subs-manager to set the subscription on
-                                        // Useful when you want the data to persist after this template 
+                                        // Useful when you want the data to persist after this template
                                         // is destroyed.
     collection: 'Comments',             // The name of the collection to use for counting results
     publication: 'CommentsInfinite'     // (optional) The name of the publication to subscribe.
@@ -34,8 +34,8 @@ if(Meteor.isServer){
         check(query.name, String);
         // Assign safe values to a new object after they have been validated
         selector.name = query.name;
-                
-      	return app.collections.Comments.find(selector, {
+
+      	return Comments.find(selector, {
           limit: limit,
           // Using sort here is necessary to continue to use the Oplog Observe Driver!
           // https://github.com/meteor/meteor/wiki/Oplog-Observe-Driver
@@ -59,11 +59,11 @@ Render your data as usual. Render the `{{> infiniteScroll }}` template after you
 ```
 > Infinite Scroll will increase the `limit` of the subscription as the `{{> infiniteScroll }}` template approaches the viewport.
 
-Provide data to the template as you usually would. Use `infiniteReady()` like you would use `subscriptionsReady()` on the template instance.
+Provide data to the template as you usually would. Use `Template.instance().infiniteSub.ready()` like you would use `subscriptionsReady()` on the template instance.
 ```js
 Template.comments.helpers({
   comments: function() {
-    return app.collections.Comments.find({ post: 71 },  {
+    return Comments.find({ post: 71 },  {
         sort: {
             created: 1
         }
