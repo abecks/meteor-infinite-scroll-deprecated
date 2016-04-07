@@ -77,7 +77,7 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   if (!collectionExists) {
     throw new Error('Collection does not exist: ', options.collection);
   } else {
-    //set collection to cursor
+    //set collection to cursor. collectionExists.name evaluates to a string
     collection = collectionExists.instance;
   }
 
