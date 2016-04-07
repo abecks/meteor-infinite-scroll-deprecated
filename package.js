@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'staringatlights:infinite-scroll',
+  name: 'meteor-infinite-scroll',
   version: '0.8.0',
   // Brief, one-line summary of the package.
   summary: 'Template level infinite scrolling.',
@@ -12,7 +12,8 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.2');
-  api.use(['jquery', 'less', 'reactive-var', 'templating', 'check', 'jwo1f:parent-template@0.0.3'], 'client');
+  api.use(['jquery', 'less', 'reactive-var', 'templating', 'jwo1f:parent-template@0.0.3', 'dburles:mongo-collection-instances'], 'client');
+  api.use('check', ['client', 'server']);
   api.export('InfiniteScroll');
   api.addFiles('infiniteScroll.html', 'client');
   api.addFiles('infinite-scroll.js', 'client');
