@@ -1,3 +1,9 @@
+## 0.9.0
+- Thanks to @mikepaszkiewicz for his contribution to this release.
+- Added example application
+- Collection is now looked up by name
+- No more ``app`` globals 
+
 ## 0.8.0
 - Remove dependency on Counts, didn't work out so well
 - Customizable class on the loader template
