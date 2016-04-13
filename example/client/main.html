@@ -1,0 +1,16 @@
+<head>
+  <title>simple</title>
+</head>
+
+<body>
+
+  <ul>
+    {{#each comments}}
+      <li>
+        {{content}}
+      </li>
+      {{/each}}
+      {{> infiniteScroll }}
+
+  </ul>
+</body>
