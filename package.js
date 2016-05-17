@@ -13,7 +13,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.2');
   api.use(['jquery', 'less', 'reactive-var', 'templating', 'jwo1f:parent-template@0.0.3', 'dburles:mongo-collection-instances@0.1.3'], 'client');
-  api.use('check', ['client', 'server']);
+  api.use(['check', 'ecmascript'], ['client', 'server']);
   api.export('InfiniteScroll');
   api.addFiles('infiniteScroll.html', 'client');
   api.addFiles('infinite-scroll.js', 'client');
