@@ -1,3 +1,6 @@
+## 0.9.1
+- Addded `ecmascript` dependency, thanks @JulianKingman
+
 ## 0.9.0
 - Thanks to @mikepaszkiewicz for his contribution to this release.
 - Added example application
