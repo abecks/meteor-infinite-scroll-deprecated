@@ -2,6 +2,9 @@
 
 InfiniteScroll = {};
 
+var CONTAINER;
+var LOADING_TEMPLATE_NAME;
+
 /**
  * Triggers 'triggerInfiniteLoad' event when the user has scrolled
  * to the trigger point.
@@ -12,14 +15,6 @@ function triggerLoadMore() {
   }
 }
 InfiniteScroll.triggerLoadMore = triggerLoadMore;
-
-/**
- * Attempt to trigger infinite loading when resize and scroll browser
- * events are fired.
- */
-Meteor.startup(function() {
-  $(window).on('resize scroll', _.throttle(triggerLoadMore, 500));
-});
 
 
 /**
@@ -33,10 +28,10 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
   var rect = this[0].getBoundingClientRect();
 
   return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (jQuery(window).height() * 1.5) &&
-    rect.right <= jQuery(window).width()
+  rect.top >= 0 &&
+  rect.left >= 0 &&
+  rect.bottom <= (jQuery(CONTAINER).height() * 1.5) &&
+  rect.right <= jQuery(CONTAINER).width()
   );
 };
 
@@ -61,7 +56,9 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     // Collection to use for counting the amount of results
     collection: null,
     // Publication to subscribe to, if null will use {collection}Infinite
-    publication: null
+    publication: null,
+    // Container will use to scroll
+    container: window
   };
   options = _.extend({}, _defaults, options);
 
@@ -69,11 +66,16 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   check(options.perPage, Number);
   check(options.collection, String);
   check(options.publication, String);
+  check(options.container,String);
+  check(options.loadingTemplateName, Match.Optional(String));
+
+  CONTAINER = options.container || _defaults.container;
+  LOADING_TEMPLATE_NAME = options.loadingTemplateName;
 
   //using collection instances package here to scan all collection and checks ours exists
   //may be a more elegant packageless solution but coudn't find anything
   let collectionExists = Meteor.Collection.getAll().find(c => c.name === options.collection);
-    // Collection exists?
+  // Collection exists?
   if (!collectionExists) {
     throw new Error('Collection does not exist: ', options.collection);
   } else {
@@ -180,6 +182,13 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   $(document).on('triggerInfiniteLoad', loadMore);
 };
 
+/**
+ * Attempt to trigger infinite loading when resize and scroll browser
+ * events are fired.
+ */
+Template.infiniteScroll.onCreated(function () {
+  $(CONTAINER).on('resize scroll', _.throttle(triggerLoadMore, 500));
+});
 
 Template.infiniteScroll.helpers({
 
@@ -196,6 +205,9 @@ Template.infiniteScroll.helpers({
     }
 
     return !tpl.infiniteSub.ready();
+  },
+  loadingTemplateName: function () {
+    return LOADING_TEMPLATE_NAME;
   }
 
 });
