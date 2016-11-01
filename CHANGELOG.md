@@ -1,14 +1,13 @@
 ## 1.0.0
 - Customizable container and loading template (thanks @VolodymyrTymets)
 - Removed dburles:mongo-collection-instances dependency (thanks @mizsha)
-- Added ecmascript dependency 
 - Rewritten demo application
 
 ## 0.9.2
 - Removed `dburles:mongo-collection-instances` dependency, thanks @mizsha
 
 ## 0.9.1
-- Addded `ecmascript` dependency, thanks @JulianKingman
+- Added `ecmascript` dependency, thanks @JulianKingman
 
 ## 0.9.0
 - Thanks to @mikepaszkiewicz for his contribution to this release.
