@@ -1,0 +1,17 @@
+<head>
+  <title>infinite-scroll-demo</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+
+  {{> comments}}
+</body>
+
+<template name="comments">
+  <h2>Comments</h2>
+  {{#each comments}}
+        <p>{{content}}</p>
+    {{/each}}
+    {{> infiniteScroll }}
+</template>

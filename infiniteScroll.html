@@ -1,11 +1,11 @@
 <template name="infiniteScroll">
-  <div class="infinite-load-more {{#if loading}}loading{{/if}}">
-    <div class="infinite-label {{class}}">
-		{{#if loadingTemplateName}}
-			{{> Template.dynamic template=loadingTemplateName }}
-		{{else}}
-          Loading...
-		{{/if}}
-    </div>
-  </div>
+	<div class="infinite-load-more {{#if loading}}loading{{/if}}">
+		<div class="infinite-label {{class}}">
+			{{#if loadingTemplateName}}
+        {{> Template.dynamic template=loadingTemplateName }}
+      {{else}}
+        Loading...
+      {{/if}}
+		</div>
+	</div>
 </template>

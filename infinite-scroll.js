@@ -2,26 +2,11 @@
 
 InfiniteScroll = {};
 
-var CONTAINER;
-var LOADING_TEMPLATE_NAME;
-
-/**
- * Triggers 'triggerInfiniteLoad' event when the user has scrolled
- * to the trigger point.
- */
-function triggerLoadMore() {
-  if ($('.infinite-load-more').isAlmostVisible()) {
-    $(document).trigger('triggerInfiniteLoad');
-  }
-}
-InfiniteScroll.triggerLoadMore = triggerLoadMore;
-
-
 /**
  * jQuery plugin to determine whether an element is "almost visible".
  * @return {Boolean}
  */
-jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
+jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible(container) {
   if (this.length === 0) {
     return;
   }
@@ -30,8 +15,8 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
   return (
   rect.top >= 0 &&
   rect.left >= 0 &&
-  rect.bottom <= (jQuery(CONTAINER).height() * 1.5) &&
-  rect.right <= jQuery(CONTAINER).width()
+  rect.bottom <= (jQuery(container).height() * 1.5) &&
+  rect.right <= jQuery(container).width()
   );
 };
 
@@ -39,7 +24,7 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible() {
  * Enable infinite scrolling on a template.
  */
 Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(options) {
-  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber, loadMore;
+  var tpl = this, _defaults, collection, subManagerCache, limit, subscriber;
 
   /*
    * Create options from defaults
@@ -58,19 +43,20 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     // Publication to subscribe to, if null will use {collection}Infinite
     publication: null,
     // Container will use to scroll
-    container: window
+    container: window,
+    // Custom loading template
+    loadingTemplateName: null
   };
-  options = _.extend({}, _defaults, options);
+  this.options = options = _.extend({}, _defaults, options);
 
   // Validate the options
   check(options.perPage, Number);
   check(options.collection, String);
   check(options.publication, String);
-  check(options.container,String);
-  check(options.loadingTemplateName, Match.Optional(String));
-
-  CONTAINER = options.container || _defaults.container;
-  LOADING_TEMPLATE_NAME = options.loadingTemplateName;
+  if(options.container !== window){
+      check(options.container, String);
+  }
+  check(options.loadingTemplateName, Match.Maybe(String));
 
   //using meteor connection stores to find collection by name
   let collectionExists = Meteor.connection._stores[options.collection];
@@ -150,19 +136,10 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     tpl.infiniteSub = subscriber.subscribe(options.publication, lmt, query, sort, null);
   });
 
-  // Check to see if we need to load more
-  tpl.autorun(function(){
-    if(tpl.infiniteSub.ready()){
-      Tracker.afterFlush(triggerLoadMore);
-    }
-  });
-
-
   /**
    * Load more results if our limit is below the total
    */
-  loadMore = function() {
-
+  const loadMore = function() {
     var query;
     if(options.query instanceof ReactiveVar){
       query = options.query.get();
@@ -176,23 +153,33 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     }
   };
 
-  // Trigger loadMore when we've scrolled/resized close to revealing .load-more
-  $(document).off('triggerInfiniteLoad');
-  $(document).on('triggerInfiniteLoad', loadMore);
+  // Check to see if we need to load more
+  const triggerLoadMore = function() {
+    if (tpl.$('.infinite-load-more').isAlmostVisible(options.container)) {
+      loadMore();
+    }
+  }
+
+  // Try to load more as soon as soon as the publication is ready,
+  // because we might need more documents to fill the screen depending
+  // on the perPage setting
+  tpl.autorun(function(){
+    if(tpl.infiniteSub.ready()){
+      Tracker.afterFlush(triggerLoadMore);
+    }
+  });
+
+  /**
+   * Attempt to trigger infinite loading when resize and scroll browser
+   * events are fired.
+   */
+  $(options.container).on('resize scroll', _.throttle(triggerLoadMore, 500));
 };
 
-/**
- * Attempt to trigger infinite loading when resize and scroll browser
- * events are fired.
- */
-Template.infiniteScroll.onCreated(function () {
-  $(CONTAINER).on('resize scroll', _.throttle(triggerLoadMore, 500));
-});
 
 Template.infiniteScroll.helpers({
 
   loading: function(){
-
     // Loop through parent templates until we find infiniteSub
     var tpl = Template.instance();
     while(!tpl.infiniteSub){
@@ -205,8 +192,4 @@ Template.infiniteScroll.helpers({
 
     return !tpl.infiniteSub.ready();
   },
-  loadingTemplateName: function () {
-    return LOADING_TEMPLATE_NAME;
-  }
-
 });

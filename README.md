@@ -19,8 +19,8 @@ Template.comments.created = function() {
     collection: 'Comments',             // The name of the collection to use for counting results
     publication: 'CommentsInfinite'     // (optional) The name of the publication to subscribe.
                                         // Defaults to {collection}Infinite
-    container: '#selector'              // (optional) Selector to scroll div.
-    loadingTemplateName:'loading'       // (optional) Name Of loading template
+    container: '#selector'              // (optional) Selector to scroll div. Defaults to window
+    loadingTemplateName:'loading'       // (optional) Name of loading graphic (spinner) template. Default will show "Loading..."
   });
 };
 ```
