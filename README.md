@@ -95,5 +95,4 @@ When the subscription is loading more data, `.infinite-load-more` will receive t
 `.infinite-label` is only visible when the subscription is loading.
 
 # Todo:
-- Customizable loading template
 - Customizable threshold for loading more results
