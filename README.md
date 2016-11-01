@@ -17,7 +17,7 @@ Template.comments.created = function() {
                                         // Useful when you want the data to persist after this template
                                         // is destroyed.
     collection: 'Comments',             // The name of the collection to use for counting results
-    publication: 'CommentsInfinite'     // (optional) The name of the publication to subscribe.
+    publication: 'CommentsInfinite',     // (optional) The name of the publication to subscribe.
                                         // Defaults to {collection}Infinite
     container: '#selector',              // (optional) Selector to scroll div. Defaults to window
     loadingTemplateName:'loading'       // (optional) Name of loading graphic (spinner) template. Default will show "Loading..."
