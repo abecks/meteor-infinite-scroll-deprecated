@@ -70,15 +70,14 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
   check(options.collection, String);
   check(options.publication, String);
 
-  //using collection instances package here to scan all collection and checks ours exists
-  //may be a more elegant packageless solution but coudn't find anything
-  let collectionExists = Meteor.Collection.getAll().find(c => c.name === options.collection);
+  //using meteor connection stores to find collection by name
+  let collectionExists = Meteor.connection._stores[options.collection];
     // Collection exists?
   if (!collectionExists) {
     throw new Error('Collection does not exist: ', options.collection);
   } else {
-    //set collection to cursor. collectionExists.name evaluates to a string
-    collection = collectionExists.instance;
+    //get collection if exists
+    collection = collectionExists._getCollection();
   }
 
   // Generate the publication name if one hasn't been provided

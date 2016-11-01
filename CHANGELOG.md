@@ -1,3 +1,6 @@
+## 0.9.2
+- Removed `dburles:mongo-collection-instances` dependency, thanks @mizsha
+
 ## 0.9.1
 - Addded `ecmascript` dependency, thanks @JulianKingman
 
@@ -5,7 +8,7 @@
 - Thanks to @mikepaszkiewicz for his contribution to this release.
 - Added example application
 - Collection is now looked up by name
-- No more ``app`` globals 
+- No more ``app`` globals
 
 ## 0.8.0
 - Remove dependency on Counts, didn't work out so well
