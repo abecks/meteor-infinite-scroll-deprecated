@@ -45,9 +45,9 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
     // Container will use to scroll
     container: window,
     // Custom loading template
-    loadingTemplateName: null
+    loadingTemplateName: 'infiniteScroll_loading'
   };
-  this.options = options = _.extend({}, _defaults, options);
+  this.infiniteScroll.options = options = _.extend({}, _defaults, options);
 
   // Validate the options
   check(options.perPage, Number);
@@ -179,7 +179,7 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
 
 Template.infiniteScroll.helpers({
 
-  loading: function(){
+  loading() {
     // Loop through parent templates until we find infiniteSub
     var tpl = Template.instance();
     while(!tpl.infiniteSub){
@@ -192,4 +192,8 @@ Template.infiniteScroll.helpers({
 
     return !tpl.infiniteSub.ready();
   },
+
+  loadingTemplateName() {
+    return Template.instance().infiniteScroll.options.loadingTemplateName;
+  }
 });

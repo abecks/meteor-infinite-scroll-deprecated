@@ -1,3 +1,7 @@
+## 1.0.1
+- Add back loadingTemplateName helper
+- Add default loading indicator as a template
+
 ## 1.0.0
 - Customizable container and loading template (thanks @VolodymyrTymets)
 - Removed dburles:mongo-collection-instances dependency (thanks @mizsha)
