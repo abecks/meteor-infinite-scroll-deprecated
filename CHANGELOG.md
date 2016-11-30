@@ -1,3 +1,6 @@
+## 1.0.2
+- Clear window events when the template is destroyed, fixes #15
+
 ## 1.0.1
 - Add back loadingTemplateName helper
 - Add default loading indicator as a template

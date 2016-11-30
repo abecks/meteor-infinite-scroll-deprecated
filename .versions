@@ -28,7 +28,7 @@ random@1.0.8
 reactive-var@1.0.8
 spacebars@1.0.10
 spacebars-compiler@1.0.10
-staringatlights:infinite-scroll@1.0.0
+staringatlights:infinite-scroll@1.0.2
 templating@1.1.8
 templating-tools@1.0.3
 tracker@1.0.12
