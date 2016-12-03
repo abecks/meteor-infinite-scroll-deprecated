@@ -1,3 +1,6 @@
+## 1.0.3
+- Add `getLimit()` method to reactively retrieve the current limit, fixes #16
+
 ## 1.0.2
 - Clear window events when the template is destroyed, fixes #15
 

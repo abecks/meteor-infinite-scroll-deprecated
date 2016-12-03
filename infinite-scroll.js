@@ -174,6 +174,13 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
    * events are fired.
    */
   $(options.container).on('resize.infiniteScroll scroll.infiniteScroll', _.throttle(triggerLoadMore, 500));
+
+  /**
+   * Reactively returns the current query limit.
+   */
+  this.getLimit = function () {
+    return this.limit.get();
+  }
 };
 
 Template.infiniteScroll.onDestroyed(function infiniteScrollDestroyed() {

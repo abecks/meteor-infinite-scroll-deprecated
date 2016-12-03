@@ -94,5 +94,9 @@ When the subscription is loading more data, `.infinite-load-more` will receive t
 
 `.infinite-label` is only visible when the subscription is loading.
 
+### API
+
+You can reactively access the current `limit` by using [templateInstance].infiniteScroll.getLimit() (e.g. `Template.instance().infiniteScroll.getLimit()`)
+
 # Todo:
 - Customizable threshold for loading more results
