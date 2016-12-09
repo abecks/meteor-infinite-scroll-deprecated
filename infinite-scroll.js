@@ -179,7 +179,7 @@ Blaze.TemplateInstance.prototype.infiniteScroll = function infiniteScroll(option
    * Reactively returns the current query limit.
    */
   this.getLimit = function () {
-    return this.limit.get();
+    return limit.get();
   }
 };
 
