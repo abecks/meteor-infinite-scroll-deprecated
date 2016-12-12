@@ -1,3 +1,6 @@
+## 1.0.4
+- Fix `getLimit()` function (thanks @mizsha)
+
 ## 1.0.3
 - Add `getLimit()` method to reactively retrieve the current limit, fixes #16
 

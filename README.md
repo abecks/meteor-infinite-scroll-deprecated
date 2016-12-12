@@ -66,7 +66,7 @@ Provide data to the template as you usually would. Use `Template.instance().infi
 Template.comments.helpers({
   comments: function() {
     return Comments.find({ post: 71 },  {
-        limit: Template.instance().getLimit(),
+        limit: Template.instance().getLimit(), // optional call to getLimit()
         sort: {
             created: 1
         }
