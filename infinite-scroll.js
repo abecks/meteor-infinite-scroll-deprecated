@@ -10,14 +10,11 @@ jQuery.fn.isAlmostVisible = function jQueryIsAlmostVisible(container) {
   if (this.length === 0) {
     return;
   }
-  var rect = this[0].getBoundingClientRect();
-
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (jQuery(container).height() * 1.5) &&
-    rect.right <= jQuery(container).width()
-  );
+  const loadingRect = this[0].getBoundingClientRect();
+  const containerRect = jQuery(container).get(0).getBoundingClientRect();
+  const scrollLimit = containerRect.bottom + containerRect.height / 4;
+  const isAlmostVisible = loadingRect.top < scrollLimit;
+  return isAlmostVisible;
 };
 
 /**
