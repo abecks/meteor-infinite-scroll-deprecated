@@ -1,3 +1,6 @@
+# This package is deprecated and no longer supported
+
+
 # Meteor Infinite Scroll
 **Enables infinite scrolling at the template level**. This package allows you to increment the `limit` parameter of a MongoDB query as the user scrolls down the page. This allows Meteor to use the Oplog Observe Driver for your query, as well as leaving you in control of your publications.
 
